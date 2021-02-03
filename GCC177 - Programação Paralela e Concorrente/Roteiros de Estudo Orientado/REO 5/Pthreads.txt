@@ -1,0 +1,38 @@
+#Criação de threads usando a biblioteca Posix Threads (PThreads)
+
+A criação de threads, usando Pthreads, consiste na inclusão de uma biblioteca pthreads.h no arquivo do programa C implementado. Essa biblioteca disponibiliza funções para criação, sincronização e destruição de threads.
+
+Para compilar código com Pthread no Linux, utiliza-se o seguinte comando:
+
+g++ pthread exemplo1.cpp  -o exemplo.o
+
+exemplo1.cpp é o nome do arquivo que contém o programa em C++ e exemplo.o é o arquivo que contém o código executável gerado após a compilação
+
+gcc -pthread exemplo2.c -o exemplo.o
+
+exemplo2.c é o nome do arquivo que contém o programa em C e exemplo2.o é o arquivo que contém o código executável gerado após a compilação
+
+
+Para executar no Linux, utiliza-se o comando:
+
+./exemplo.o
+
+Compile e execute os arquivos-exemplos.
+
+Verifique a execução de threads e processos no sistema operacional, usando o comando:
+
+ps -eLf  | grep "nome do seu executavel"
+
+pthread_create --> cria threads que executam uma determinada função
+
+pthread_exit --> termina execução da thread
+
+pthread_join --> thread principal espera threads filhasterminarem antes de finalizar sua execução
+
+pthread_mutex_init --> inicializa semáforo
+
+pthtread_mutex_lock --> thread entra na seção crítica e  bloqueia a entrada de outras
+
+pthtread_mutex_unlock --> thread sai da seção crítica e  desbloqueia a entrada
+
+pthtread_mutex_destroy -->finaliza mutex
