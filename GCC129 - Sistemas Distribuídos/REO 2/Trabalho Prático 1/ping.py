@@ -14,7 +14,7 @@ sock.settimeout(0.25)
 lost_packets = 0
 rtt_list = []
 
-for counter in range(10):
+for counter in range(1, 11):
     try:
         rtt_start = time.time()
         
@@ -25,7 +25,7 @@ for counter in range(10):
         rtt = rtt_end - rtt_start
         rtt_list.append(rtt)
 
-        print("Packet number", counter + 1, "received from", addr, "in", rtt, "second with message:", data.decode())
+        print("Packet number", counter, "received from", addr, "in", rtt, "second with message:", data.decode())
 
     except socket.timeout:
         lost_packets += 1
