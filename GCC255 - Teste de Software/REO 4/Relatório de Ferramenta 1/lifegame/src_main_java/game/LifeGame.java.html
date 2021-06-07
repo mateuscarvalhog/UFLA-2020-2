@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>LifeGame.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">AppTest2 (1) (24 de mai de 2021 22:15:11)</a> &gt; <a href="../../index.html" class="el_group">lifegame</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">game</a> &gt; <span class="el_source">LifeGame.java</span></div><h1>LifeGame.java</h1><pre class="source lang-java linenums">package game;
+
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.stream.Stream;
+
+public class LifeGame {
+<span class="nc" id="L8">    private enum NeighborPosition {</span>
+<span class="nc" id="L9">        LEFT(-1, 0),</span>
+<span class="nc" id="L10">        RIGHT(1, 0),</span>
+<span class="nc" id="L11">        TOP(0, -1),</span>
+<span class="nc" id="L12">        TOP_LEFT(-1, -1),</span>
+<span class="nc" id="L13">        TOP_RIGHT(1, -1),</span>
+<span class="nc" id="L14">        BOTTOM(0, 1),</span>
+<span class="nc" id="L15">        BOTTOM_LEFT(-1, 1),</span>
+<span class="nc" id="L16">        BOTTOM_RIGHT(1, 1);</span>
+
+        public int horizontalFactor;
+        public int verticalFactor;
+<span class="nc" id="L20">        NeighborPosition (int horizontalFactor, int verticalFactor) {</span>
+<span class="nc" id="L21">            this.horizontalFactor = horizontalFactor;</span>
+<span class="nc" id="L22">            this.verticalFactor = verticalFactor;</span>
+<span class="nc" id="L23">        }</span>
+    }
+
+<span class="fc" id="L26">    private final int BOARD_DIMENSION = 6;</span>
+<span class="fc" id="L27">    private final int ALIVE_STATE = 1;</span>
+<span class="fc" id="L28">    private final int DEAD_STATE = 0;</span>
+    private Board oldBoard;
+    private Board board;
+<span class="fc" id="L31">    private boolean firstGeneration = true;</span>
+
+<span class="fc" id="L33">    public LifeGame() {</span>
+<span class="fc" id="L34">        board = new Board(BOARD_DIMENSION);</span>
+<span class="fc" id="L35">        oldBoard = new Board(BOARD_DIMENSION);</span>
+<span class="fc" id="L36">    }</span>
+
+    public void run() {
+<span class="nc" id="L39">        boolean mustContinue = true;</span>
+
+         do {
+<span class="nc" id="L42">             getNewGeneration();</span>
+
+<span class="nc" id="L44">             System.out.println(&quot;Tabuleiro anterior&quot;);</span>
+<span class="nc" id="L45">             System.out.println(oldBoard.toString());</span>
+
+<span class="nc" id="L47">             System.out.println(&quot;Tabuleiro atual&quot;);</span>
+<span class="nc" id="L48">             System.out.println(board.toString());</span>
+<span class="nc" id="L49">             mustContinue = askIfItShouldContinue();</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        } while (mustContinue);</span>
+<span class="nc" id="L51">    }</span>
+
+    private boolean askIfItShouldContinue() {
+<span class="nc" id="L54">        Scanner sc = new Scanner(System.in);</span>
+<span class="nc" id="L55">        String response = &quot;&quot;;</span>
+
+        do {
+<span class="nc" id="L58">            System.out.print(&quot;Deseja continuar? (S/N) &quot;);</span>
+<span class="nc" id="L59">            response = sc.nextLine().trim().toLowerCase();</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">        } while (!response.equals(&quot;s&quot;) &amp;&amp; !response.equals(&quot;n&quot;));</span>
+
+<span class="nc" id="L62">        System.out.println(&quot;&quot;);</span>
+<span class="nc" id="L63">        return response.equals(&quot;s&quot;);</span>
+    }
+
+    private void getNewGeneration() {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (firstGeneration) {</span>
+<span class="nc" id="L68">            this.board.initializeBoard();</span>
+<span class="nc" id="L69">            this.oldBoard.setBoard(this.board);</span>
+<span class="nc" id="L70">            firstGeneration = false;</span>
+<span class="nc" id="L71">        } else {</span>
+<span class="nc" id="L72">            Board auxBoard = new Board(this.board);</span>
+<span class="nc" id="L73">            this.oldBoard.setBoard(this.board);</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            for (int i = 0; i &lt; BOARD_DIMENSION; i++) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                for (int j = 0; j &lt; BOARD_DIMENSION; j++) {</span>
+<span class="nc" id="L77">                    Coordinate cellCoordinate = new Coordinate(i, j);</span>
+<span class="nc" id="L78">                    int currentState = board.getCellState(cellCoordinate);</span>
+<span class="nc" id="L79">                    int quantityOfAliveNeighbors = getQuantityOfAliveNeighbors(cellCoordinate);</span>
+
+<span class="nc" id="L81">                    int nextState = getNextState(currentState, quantityOfAliveNeighbors);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                    if (nextState == -1) {</span>
+<span class="nc" id="L83">                        throw new IllegalStateException(&quot;Valor de C ou NÃºmero de vizinhos invÃ¡lido&quot;);</span>
+                    }
+<span class="nc" id="L85">                    auxBoard.setCellState(cellCoordinate, nextState);</span>
+                }
+            }
+
+<span class="nc" id="L89">            this.board.setBoard(auxBoard);</span>
+        }
+<span class="nc" id="L91">    }</span>
+
+    public int getNextState (int currentState, int quantityOfAliveNeighbors) {
+<span class="fc bfc" id="L94" title="All 8 branches covered.">        if (quantityOfAliveNeighbors &lt; 0 || quantityOfAliveNeighbors &gt; 8 || currentState &lt; 0 || currentState &gt; 1) {</span>
+<span class="fc" id="L95">            return -1;</span>
+        }
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (currentState == ALIVE_STATE) {</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">            if (quantityOfAliveNeighbors &lt; 2 || quantityOfAliveNeighbors &gt; 3) return DEAD_STATE;</span>
+        }
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (currentState == DEAD_STATE) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (quantityOfAliveNeighbors == 3) return ALIVE_STATE;</span>
+        }
+
+<span class="fc" id="L106">        return currentState;</span>
+    }
+
+    private int getQuantityOfAliveNeighbors(Coordinate cellCoordinate) {
+<span class="nc" id="L110">        Stream&lt;NeighborPosition&gt; nbPositionStream = Stream.of(NeighborPosition.values());</span>
+
+<span class="nc" id="L112">        return nbPositionStream.reduce(0, (totalAlive, nbPosition) -&gt; {</span>
+<span class="nc" id="L113">            Optional&lt;Integer&gt; neighborState = getNeighborState(cellCoordinate, nbPosition);</span>
+
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            if (neighborState.isPresent()) {</span>
+<span class="nc" id="L116">                totalAlive = totalAlive + neighborState.get();</span>
+            }
+
+<span class="nc" id="L119">            return totalAlive;</span>
+<span class="nc" id="L120">        }, Integer::sum);</span>
+    }
+
+    private Optional&lt;Integer&gt; getNeighborState(Coordinate cellCoordinate, NeighborPosition nbPosition) {
+<span class="nc" id="L124">        int nbCoordX = cellCoordinate.X + nbPosition.horizontalFactor;</span>
+<span class="nc" id="L125">        int nbCoordY = cellCoordinate.Y + nbPosition.verticalFactor;</span>
+<span class="nc" id="L126">        Coordinate nbCoordinate = new Coordinate(nbCoordX, nbCoordY);</span>
+
+<span class="nc" id="L128">        boolean isValid = this.board.cellIsValid(nbCoordinate);</span>
+
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (this.board.cellIsValid(nbCoordinate)) return Optional.of(this.board.getCellState(nbCoordinate));</span>
+
+<span class="nc" id="L132">        return Optional.empty();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span>AppTest2 (1) (24 de mai de 2021 22:15:11)</div></body></html>
